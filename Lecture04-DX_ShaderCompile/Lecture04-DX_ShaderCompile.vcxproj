@@ -21,10 +21,9 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{f3b21ccf-8a24-4284-abda-2f0c19dd3b79}</ProjectGuid>
-    <RootNamespace>Lecture01</RootNamespace>
+    <ProjectGuid>{c390a64f-7162-4a9d-98f6-62036e717a5a}</ProjectGuid>
+    <RootNamespace>Lecture04DXShaderCompile</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>Lecture01-win32</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
