@@ -11,9 +11,10 @@
 #include <d3dcompiler.h>
 
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
-#pragma comment(lib, "d3d11.lib")
-#pragma comment(lib, "dxgi.lib")
-#pragma comment(lib, "d3dcompiler.lib")
+// # 원래는 하나의 라이브러리였음
+#pragma comment(lib, "d3d11.lib") // # 컴팩트한 기능 제공
+#pragma comment(lib, "dxgi.lib")  // # 하드웨어 추상화
+#pragma comment(lib, "d3dcompiler.lib") // # programmable pipeline, shader, gpgpu 등등
 
  // --- [전역 객체 관리] ---
  // DirectX 객체들은 GPU 메모리를 직접 사용함. 
@@ -64,7 +65,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     if (!hWnd) return -1;
     ShowWindow(hWnd, nCmdShow);
 
-    // 2. DX11 디바이스 및 스왑 체인 초기화
+    // 2. DX11 디바이스 및 스왑 체인(이중 버퍼링) 초기화
     DXGI_SWAP_CHAIN_DESC sd = {};
     sd.BufferCount = 1;
     sd.BufferDesc.Width = 800; sd.BufferDesc.Height = 600;
@@ -74,7 +75,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     sd.SampleDesc.Count = 1;
     sd.Windowed = TRUE;
 
-    // GPU와 통신할 통로(Device)와 화면(SwapChain)을 생성함.
+    // GPU와 통신할 통로(Device, &g_pd3dDevice)와 화면(SwapChain, &g_pSwapChain)을 생성함.
     D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr, 0,
         D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, nullptr, &g_pImmediateContext);
 
@@ -91,13 +92,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     ID3D11VertexShader* vShader;
     ID3D11PixelShader* pShader;
+    // # 쉐이더 생성 등은 모두 디바이스에서
     g_pd3dDevice->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &vShader);
     g_pd3dDevice->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &pShader);
 
     // 정점의 데이터 형식을 정의 (IA 단계에 알려줌)
     D3D11_INPUT_ELEMENT_DESC layout[] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }, // 3개 들어가니 12바이트
+        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }, // 3개 들어가니 size는 12바이트
     };
     ID3D11InputLayout* pInputLayout;
     g_pd3dDevice->CreateInputLayout(layout, 2, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &pInputLayout);
