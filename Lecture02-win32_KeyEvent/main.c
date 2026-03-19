@@ -76,6 +76,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 /*
  * [WinMain - 프로그램의 심장부]
  */
+/* // # AI
+HINSTANCE hInstance: 현재 실행된 프로그램의 인스턴스 핸들. 프로세스 식별 고유 인스턴스. 윈도우 여러 개를 동시적으로 관리하는 경우 여러 개 쓸 수도 있다.
+HINSTANCE hPrevInstance: 이전 인스턴스의 핸들입니다. 16비트 윈도우 호환성을 위해 존재하며, 최신 32/64비트 윈도우에서는 항상 NULL (0)입니다.
+LPSTR lpCmdLine: 명령줄 인수 문자열. 프로그램 이름은 제외
+int nCmdShow: 초기 윈도우를 표시 방식. 일반적인 창(SW_SHOWNORMAL), 최소화(SW_SHOWMINNOACTIVE), 최대화(SW_SHOWMAXIMIZED)
+*/
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     // (A) 윈도우 클래스 등록: 창의 '설계도'를 OS에 등록함.
@@ -89,7 +95,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
     RegisterClassExW(&wcex);
 
-    // (B) 윈도우 생성: 설계도를 바탕으로 실제 '객체(창)'를 메모리에 만듦.
+    // (B) 윈도우 생성: 설계도를 바탕으로 실제 '객체(창)'를 메모리에 만듦. (window handle)
     HWND hWnd = CreateWindowW(L"MyLectureClass", L"Input Study Window", WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT, 800, 600, NULL, NULL, hInstance, NULL);
 
