@@ -67,7 +67,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     // --- (C) 메시지 루프 ---
     // OS로부터 전달되는 메시지를 지속적으로 감시하고 처리함.
     // DirectX 연동 시에는 GetMessage 대신 PeekMessage를 사용하여 무한 루프를 돌림.
-    // # PeekMessage는 이벤트가 있는지 없는지 확인
+    // # PeekMessage는 이벤트가 있는지 없는지 확인, polling한 후 메시지가 없으면 return 0하고 넘어감
+    // # GetMessage는 메시지가 없으면 block한다(wait이랑 동일)
     MSG msg;
     while (GetMessage(&msg, nullptr, 0, 0))
     {
