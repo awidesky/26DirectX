@@ -97,7 +97,6 @@ constexpr int width = 800;
 constexpr int height = 600;
 constexpr float aspect = (float)width / height;
 
-/**/
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     // 1. 윈도우 등록 및 생성
@@ -210,6 +209,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
             // 먼저 만든 거 지우고
             if (pVBuffer) pVBuffer->Release();
+            // 버퍼 속성과 데이터의 주소는 바뀌지 않으니, bd도 initData도 바뀌지 않는다.
             g_pd3dDevice->CreateBuffer(&bd, &initData, &pVBuffer);
         }
 
@@ -240,7 +240,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         g_pSwapChain->Present(0, 0);
     }
 
-    printf("\n메시지 루프가 종료되었습니다. 프로그램 끝.\n");
+    printf("\n게임 루프가 종료되었습니다. 프로그램 끝.\n");
     if (pVBuffer) pVBuffer->Release();
     if (pInputLayout) pInputLayout->Release();
     if (vShader) vShader->Release();
