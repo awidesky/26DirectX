@@ -96,7 +96,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     g_pd3dDevice->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &vShader);
     g_pd3dDevice->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &pShader);
 
-    // 정점의 데이터 형식을 정의 (IA 단계에 알려줌)
+   /*
+    typedef struct D3D11_INPUT_ELEMENT_DESC {
+        LPCSTR                     SemanticName;         // 1. 의미 (이름)
+        UINT                       SemanticIndex;        // 2. 번호 (인덱스)
+        DXGI_FORMAT                Format;               // 3. 데이터 형식 (크기/타입)
+        UINT                       InputSlot;            // 4. 입력 슬롯 (통로)
+        UINT                       AlignedByteOffset;    // 5. 오프셋 (시작 지점)
+        D3D11_INPUT_CLASSIFICATION InputSlotClass;       // 6. 클래스 (데이터 성격)
+        UINT                       InstanceDataStepRate; // 7. 인스턴싱 스텝
+    } D3D11_INPUT_ELEMENT_DESC;
+    */
+    //정점의 데이터 형식을 정의 (IA 단계에 알려줌)
     D3D11_INPUT_ELEMENT_DESC layout[] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }, // 3개 들어가니 size는 12바이트

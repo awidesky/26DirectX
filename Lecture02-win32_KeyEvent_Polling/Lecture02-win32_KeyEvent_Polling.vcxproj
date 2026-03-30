@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{81cb4d1e-862d-43c4-912e-6b11af799e0f}</ProjectGuid>
-    <RootNamespace>Lecture03win32DeltaTimeGameLoop</RootNamespace>
+    <ProjectGuid>{2c947138-f0bd-4207-bd89-cb57b22dec82}</ProjectGuid>
+    <RootNamespace>Lecture02win32KeyEventPolling</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -127,7 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="main.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
