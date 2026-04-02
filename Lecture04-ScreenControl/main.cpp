@@ -179,6 +179,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             g_pImmediateContext->PSSetShader(g_pPixelShader, nullptr, 0);
             g_pImmediateContext->Draw(3, 0);
 
+
+            // # 2를 주면 프레임이 반이 된다
             g_pSwapChain->Present(g_Config.VSync, 0); // V-Sync 활성화
         }
     }
