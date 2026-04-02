@@ -83,21 +83,36 @@ class PlayerControl : public Component {
 public:
     float x, y, speed;
     bool moveUp, moveDown, moveLeft, moveRight;
+    int playerType = 0;
 
+    PlayerControl(int type)
+    {
+        playerType = type;
+    }
     void Start() override 
     {
         x = 50.0f; y = 50.0f; speed = 150.0f;
-        moveUp = moveDown = moveLeft = moveRight = false;
-        printf("[%s] PlayerControl 기능 시작!\n", pOwner->name.c_str());
+        moveUp = moveDown = moveLeft = moveRight = false;        
+        printf("[%s] PlayerControl 기능 시작!\n", pOwner->name.c_str());        
     }
 
     // [입력 단계] 키 상태만 체크함
     void Input() override 
     {
-        moveUp = (GetAsyncKeyState('W') & 0x8000);
-        moveDown = (GetAsyncKeyState('S') & 0x8000);
-        moveLeft = (GetAsyncKeyState('A') & 0x8000);
-        moveRight = (GetAsyncKeyState('D') & 0x8000);
+        if (playerType == 0)
+        {
+            moveUp = (GetAsyncKeyState('W') & 0x8000);
+            moveDown = (GetAsyncKeyState('S') & 0x8000);
+            moveLeft = (GetAsyncKeyState('A') & 0x8000);
+            moveRight = (GetAsyncKeyState('D') & 0x8000);
+        }
+        if (playerType == 1)
+        {
+            moveUp = (GetAsyncKeyState(VK_UP) & 0x8000);
+            moveDown = (GetAsyncKeyState(VK_DOWN) & 0x8000);
+            moveLeft = (GetAsyncKeyState(VK_LEFT) & 0x8000);
+            moveRight = (GetAsyncKeyState(VK_RIGHT) & 0x8000);
+        }
     }
 
     // [업데이트 단계] 체크된 키 상태로 좌표만 계산함
@@ -125,7 +140,12 @@ public:
 
         
         MoveCursor(px, py);
-        printf("★");
+
+        if (playerType == 0)
+            printf("★");
+        if (playerType == 1)
+            printf("☆");
+        
     }
 };
 
@@ -279,15 +299,18 @@ int main()
 
     // 시스템 정보 객체 조립
     GameObject* sysInfo = new GameObject("SystemManager");
-    InfoDisplay* pInfo = new InfoDisplay();
-    sysInfo->AddComponent(pInfo);
+    sysInfo->AddComponent(new InfoDisplay());
     gLoop.gameWorld.push_back(sysInfo);
 
     // 플레이어 객체 조립
-    GameObject* player = new GameObject("Player1");
-    PlayerControl* pControl = new PlayerControl();
-    player->AddComponent(pControl);
-    gLoop.gameWorld.push_back(player);
+    GameObject* player1 = new GameObject("Player1");
+    player1->AddComponent(new PlayerControl(0));
+    gLoop.gameWorld.push_back(player1);
+
+    // 플레이어 객체 조립
+    GameObject* player2 = new GameObject("Player2");
+    player2->AddComponent(new PlayerControl(1));
+    gLoop.gameWorld.push_back(player2);
 
     //게임루프 실행
     gLoop.Run();
