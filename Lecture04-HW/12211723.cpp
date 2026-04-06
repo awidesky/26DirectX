@@ -495,11 +495,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     // 플레이어 객체 조립
     GameObject* player1 = new GameObject("Player1");
-    TriangleControl* pControl1 = new TriangleControl(-0.8f, -0.8f, 1);
+    TriangleControl* pControl1 = new TriangleControl(0.8f, 0.8f, 0);
     player1->AddComponent(pControl1);
     gLoop.gameWorld.push_back(player1);
     GameObject* player2 = new GameObject("Player2");
-    TriangleControl* pControl2 = new TriangleControl(0.8f, 0.8f, 0);
+    TriangleControl* pControl2 = new TriangleControl(-0.8f, -0.8f, 1);
     player2->AddComponent(pControl2);
     gLoop.gameWorld.push_back(player2);
 
