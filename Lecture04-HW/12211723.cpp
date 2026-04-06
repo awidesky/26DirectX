@@ -99,12 +99,10 @@ public:
 class GameObject {
 public:
     std::string name;
+    float x, y;
     std::vector<Component*> components;
 
-    GameObject(std::string n)
-    {
-        name = n;
-    }
+    GameObject(std::string n, float x = 0.0f, float y = 0.0f) : name(n), x(x), y(y) {}
 
     // 객체가 죽을 때 담고 있던 컴포넌트들도 메모리에서 해제함
     ~GameObject() {
@@ -128,7 +126,7 @@ public:
 // 기능 1: 플레이어 조종 및 이동
 class TriangleControl : public Component {
 public:
-    float x, y, speed = 10.0f;
+    float speed = 10.0f;
     bool wasd;
     bool moveUp, moveDown, moveLeft, moveRight;
     Vertex vertices[3], initpos[3] = {
@@ -140,8 +138,14 @@ public:
     D3D11_SUBRESOURCE_DATA bufferData = { vertices, 0, 0 };
     ID3D11Buffer* pVBuffer = nullptr;
     
-	TriangleControl(float x, float y, bool wasd) : x(x), y(y), wasd(wasd) {
+	TriangleControl(bool wasd) : wasd(wasd) {
         moveUp = moveDown = moveLeft = moveRight = false;
+    }
+    ~TriangleControl() {
+        if (pVBuffer) pVBuffer->Release();
+    }
+
+    void Start() override {
         if (wasd) {
             initpos[0].b = 1.0f;
             initpos[1].r = 1.0f;
@@ -149,17 +153,10 @@ public:
         }
         for (int i = 0; i < 3; i++) {
             vertices[i] = initpos[i];
-            vertices[i].x += x;
-            vertices[i].y += y;
+            vertices[i].x += pOwner->x;
+            vertices[i].y += pOwner->y;
         }
         g_pd3dDevice->CreateBuffer(&bd, &bufferData, &pVBuffer);
-    }
-    ~TriangleControl() {
-        if (pVBuffer) pVBuffer->Release();
-    }
-
-    void Start() override
-    {
         printf("[%s] TriangleControl 기능 시작!\n", pOwner->name.c_str());
     }
 
@@ -175,14 +172,14 @@ public:
     // [업데이트 단계] 체크된 키 상태로 좌표만 계산함
     void Update(float dt) override
     {
-        if (moveUp)    y += speed * dt;
-        if (moveDown)  y -= speed * dt;
-        if (moveLeft)  x -= speed * dt;
-        if (moveRight) x += speed * dt;
+        if (moveUp)    pOwner->y += speed * dt;
+        if (moveDown)  pOwner->y -= speed * dt;
+        if (moveLeft)  pOwner->x -= speed * dt;
+        if (moveRight) pOwner->x += speed * dt;
 
         // 화면의 아예 바깥으로 나가지 못하게
-        x = max(-1.0f, min(1.0f, x));
-        y = max(-1.0f, min(1.0f, y));
+        pOwner->x = max(-1.0f, min(1.0f, pOwner->x));
+        pOwner->y = max(-1.0f, min(1.0f, pOwner->y));
     }
 
     // [렌더링 단계] 계산된 좌표를 화면에 그림
@@ -190,8 +187,8 @@ public:
     {
         if (moveUp || moveDown || moveLeft || moveRight) { //위치 변경 없으면 굳이 버퍼 새로 만들지 않는다
             for (int i = 0; i < sizeof(vertices) / sizeof(Vertex); i++) {
-                vertices[i].x = initpos[i].x + x;
-                vertices[i].y = initpos[i].y + y;
+                vertices[i].x = initpos[i].x + pOwner->x;
+                vertices[i].y = initpos[i].y + pOwner->y;
             }
 
             // 먼저 만든 거 지우고
@@ -494,12 +491,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     gLoop.gameWorld.push_back(sysInfo);
 
     // 플레이어 객체 조립
-    GameObject* player1 = new GameObject("Player1");
-    TriangleControl* pControl1 = new TriangleControl(0.8f, 0.8f, 0);
+    GameObject* player1 = new GameObject("Player1", 0.8f, 0.8f);
+    TriangleControl* pControl1 = new TriangleControl(0);
     player1->AddComponent(pControl1);
     gLoop.gameWorld.push_back(player1);
-    GameObject* player2 = new GameObject("Player2");
-    TriangleControl* pControl2 = new TriangleControl(-0.8f, -0.8f, 1);
+    GameObject* player2 = new GameObject("Player2", -0.8f, -0.8f);
+    TriangleControl* pControl2 = new TriangleControl(1);
     player2->AddComponent(pControl2);
     gLoop.gameWorld.push_back(player2);
 
