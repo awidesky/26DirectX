@@ -119,6 +119,15 @@ public:
         pComp->isStarted = false;
         components.push_back(pComp);
     }
+
+    void UpdateComponents(float deltaTime) {
+        for (int i = 0; i < (int)components.size(); i++)
+            components[i]->Update(deltaTime);
+    }
+    void RenderComponents() {
+        for (int i = 0; i < (int)components.size(); i++)
+            components[i]->Render();
+    }
 };
 
 // --- [3단계: 실제 구현할 기능 컴포넌트들] ---
@@ -366,8 +375,7 @@ public:
 
         // D. 업데이트 단계 (Update Phase)
         for (int i = 0; i < (int)gameWorld.size(); i++)
-            for (int j = 0; j < (int)gameWorld[i]->components.size(); j++)
-                gameWorld[i]->components[j]->Update(deltaTime);
+            gameWorld[i]->UpdateComponents(deltaTime);
     }
 
     void Render()
@@ -402,11 +410,8 @@ public:
 
 
         // # 각 컴포넌트 먼저 그리기
-		for (int i = 0; i < (int)gameWorld.size(); i++) {
-			for (int j = 0; j < (int)gameWorld[i]->components.size(); j++) {
-				gameWorld[i]->components[j]->Render();
-			}
-		}
+		for (int i = 0; i < (int)gameWorld.size(); i++)
+			gameWorld[i]->RenderComponents();
 
         // [중요] Present의 역할
         // 다 그려진 백버퍼(g_Config 크기)를 실제 윈도우 창으로 전송함.
