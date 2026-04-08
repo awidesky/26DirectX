@@ -1,5 +1,4 @@
 /*
-* 
 ================================================================================
  [강의 노트: 싱글턴 패턴 (Singleton Pattern)]
 ================================================================================
@@ -107,13 +106,19 @@ void DrawSomething() {
 int main() {
     // 1. 초기화 (WinMain이나 DX 초기화 루틴에서 실행)
     // 실제로는 유효한 핸들과 디바이스를 넣어야 함
-    VideoSystem::GetInstance()->Initialize((HWND)0x1234, nullptr, (ID3D11DeviceContext*)0x5678);
+    VideoSystem* vs = nullptr;
+    vs = vs->GetInstance();
+    vs->Initialize((HWND)0x1234, nullptr, (ID3D11DeviceContext*)0x5678);
 
     // 2. 로직 수행
     DrawSomething();
 
+    VideoSystem* vs2 = nullptr;
+    vs2 = vs2->GetInstance();
+
     // 3. 종료
-    VideoSystem::Release();
+    vs->Release();
+    vs2->Release();
 
     return 0;
 }
