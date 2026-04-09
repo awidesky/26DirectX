@@ -307,7 +307,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             PS_INPUT output;
 
             // 3D 좌표(float3)를 4D 좌표(float4)로 확장함.
-            // 마지막 1.0f(w값)는 행렬 연산과 투영을 위해 필요함.
+            // 마지막 1.0f(w값)는 행렬 연산과 투영을 위해 필요함. # (원점이 따로 정의되어 있구나)
             output.pos = float4(input.pos, 1.0f);
 
             // 색상은 딱히 계산할 게 없으므로 들어온 대로 통과시킴 (Pass-through)
