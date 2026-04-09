@@ -60,7 +60,8 @@ using namespace DirectX;
 // HLSL의 cbuffer와 1:1로 매칭되어야 함 (16바이트 정렬 주의)
 struct ConstantData {
     XMFLOAT2 offset;    // x, y 이동값 (8바이트)
-    float padding[2];   // 16바이트 단위를 맞추기 위한 빈 공간 (8바이트)
+    float rotate;    // 회전값(라디안 (4바이트)
+    float padding;   // 16바이트 단위를 맞추기 위한 빈 공간 (8바이트)
 };
 
 struct VideoConfig {
@@ -89,6 +90,7 @@ struct Vertex {
 
 // [실시간 이동을 위한 오프셋 변수]
 XMFLOAT2 g_CurOffset = { 0.0f, 0.0f };
+float g_Rotate = 0.0f;
 
 void RebuildVideoResources(HWND hWnd) {
     if (!g_pSwapChain) return;
@@ -121,7 +123,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     RECT rc = { 0, 0, g_Config.Width, g_Config.Height };
     AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-    HWND hWnd = CreateWindowW(L"DX11MoveClass", L"Arrows: Move | 1, 2: Resize",
+    HWND hWnd = CreateWindowW(L"DX11MoveClass", L"Arrows: Move | W, A: Rotate | 1, 2: Resize",
         WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
     ShowWindow(hWnd, nCmdShow);
 
@@ -145,7 +147,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         cbuffer MoveBuffer : register(b0) // 상수 버퍼 슬롯 b0 사용
         {
             float2 g_Offset; // CPU에서 보내준 x, y 이동값
-            float2 g_Padding;
+            float g_Rotate;
+            float g_Padding;
         };
 
         struct VS_INPUT {
@@ -160,9 +163,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
         PS_INPUT VS_Main(VS_INPUT input) {
             PS_INPUT output;
-            
+
+            // # 회전 행렬 추가
+            float3x3 rMatrix = { cos(g_Rotate), -sin(g_Rotate),  0.0f,  // row 1
+                                 sin(g_Rotate),  cos(g_Rotate),  0.0f,  // row 2
+                                 0.0f,           0.0f,           1.0f}; // row 3
+
             // 입력받은 정점 위치에 오프셋을 더함 (이동 처리)
-            float3 finalPos = input.pos;
+            float3 finalPos = mul(rMatrix, input.pos);
             finalPos.x += g_Offset.x;
             finalPos.y += g_Offset.y;
 
@@ -172,7 +180,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         }
 
         float4 PS_Main(PS_INPUT input) : SV_Target {
-            return input.col;
+            float halfPI = 1.57079635f;
+            float4 ret = float4((float3)((sin(g_Rotate - halfPI) + 1.0f) / 2.0f), 1.0f); //((g_Rotate % pi2) / pi2);
+            return ret;
         }
     )";
 
@@ -214,10 +224,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         else {
             // [방향키 입력 처리]
             float moveSpeed = 0.005f;
+            float rotateAngle = 0.1f;
             if (GetAsyncKeyState(VK_LEFT))  g_CurOffset.x -= moveSpeed;
             if (GetAsyncKeyState(VK_RIGHT)) g_CurOffset.x += moveSpeed;
             if (GetAsyncKeyState(VK_UP))    g_CurOffset.y += moveSpeed;
             if (GetAsyncKeyState(VK_DOWN))  g_CurOffset.y -= moveSpeed;
+            if (GetAsyncKeyState('A'))      g_Rotate += rotateAngle;
+            if (GetAsyncKeyState('D'))      g_Rotate -= rotateAngle;
 
             if (GetAsyncKeyState('1') & 0x0001) { g_Config.Width = 800; g_Config.Height = 600; g_Config.NeedsResize = true; }
             if (GetAsyncKeyState('2') & 0x0001) { g_Config.Width = 1280; g_Config.Height = 720; g_Config.NeedsResize = true; }
@@ -228,9 +241,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             g_pImmediateContext->ClearRenderTargetView(g_pRenderTargetView, clearColor);
 
             // [3. 상수 버퍼 데이터 업데이트 및 전송]
-            ConstantData cbData = { g_CurOffset };
+            ConstantData cbData = { g_CurOffset, g_Rotate };
             g_pImmediateContext->UpdateSubresource(g_pConstantBuffer, 0, nullptr, &cbData, 0, 0);
             g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer); // VS의 0번 슬롯(b0)에 바인딩
+            g_pImmediateContext->PSSetConstantBuffers(0, 1, &g_pConstantBuffer); // PS의 0번 슬롯(b0)에 바인딩 ＃ 픽셀 쉐이더에서도 써야 하므로 바인딩해야함!
 
             D3D11_VIEWPORT vp = { 0.0f, 0.0f, (float)g_Config.Width, (float)g_Config.Height, 0.0f, 1.0f };
             g_pImmediateContext->RSSetViewports(1, &vp);
