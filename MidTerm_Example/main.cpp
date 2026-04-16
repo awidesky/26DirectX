@@ -36,7 +36,7 @@ public:
 
     ~GameObject() 
     {
-        //4번문제 버그발생지점
+        //5번문제 버그발생지점
     }
 
     void AddComponent(Component* pComp)
