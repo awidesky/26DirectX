@@ -89,6 +89,9 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <iostream>
+#include <DirectXMath.h>
+
+
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -146,6 +149,8 @@ void RebuildVideoResources(HWND hWnd) {
 
     g_Config.NeedsResize = false;
     printf("[Video] Changed: %d x %d\n", g_Config.Width, g_Config.Height);
+
+    
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
