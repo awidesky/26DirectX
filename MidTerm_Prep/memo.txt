@@ -1,0 +1,82 @@
+
+#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console") // 하위 시스템을 콘솔로 설정하고, 진입점은 WinMain으로 강제 지정
+//#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:windows") // 하위 시스템을 윈도우로 설정하고, 진입점은 WinMain으로 강제 지정
+//#pragma comment(linker, "/subsystem:console")
+
+// # 원래는 하나의 라이브러리였음
+#pragma comment(lib, "d3d11.lib") // # 컴팩트한 기능 제공
+#pragma comment(lib, "dxgi.lib")  // # 하드웨어 추상화
+#pragma comment(lib, "d3dcompiler.lib") // # programmable pipeline, shader, gpgpu 등등
+
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, 
+	LPSTR lpCmdLine, //프로그램 이름을 제외한 애플리케이션에 대한 명령줄입니다. 전체 명령줄을 검색하려면
+	int nCmdShow // ShowWindow함수의 파라메터. SW_* 
+)
+
+// --- (C) 메시지 루프 ---
+// OS로부터 전달되는 메시지를 지속적으로 감시하고 처리함.
+// DirectX 연동 시에는 GetMessage 대신 PeekMessage를 사용하여 무한 루프를 돌림.
+// # PeekMessage는 이벤트가 있는지 없는지 확인, polling한 후 메시지가 없으면 return 0하고 넘어감
+// # GetMessage는 메시지가 없으면 block한다(wait이랑 동일)
+MSG msg;
+while (GetMessage(&msg, nullptr, 0, 0))
+{
+    TranslateMessage(&msg); // 키보드 입력 메시지 변환
+    DispatchMessage(&msg);  // WndProc으로 메시지 전달
+}
+
+
+/*
+typedef struct D3D11_INPUT_ELEMENT_DESC {
+    LPCSTR                     SemanticName;         // 1. 의미 (이름)
+    UINT                       SemanticIndex;        // 2. 번호 (인덱스)
+    DXGI_FORMAT                Format;               // 3. 데이터 형식 (크기/타입)
+    UINT                       InputSlot;            // 4. 입력 슬롯 (통로)
+    UINT                       AlignedByteOffset;    // 5. 오프셋 (시작 지점)
+    D3D11_INPUT_CLASSIFICATION InputSlotClass;       // 6. 클래스 (데이터 성격)
+    UINT                       InstanceDataStepRate; // 7. 인스턴싱 스텝
+} D3D11_INPUT_ELEMENT_DESC;
+*/
+//정점의 데이터 형식을 정의 (IA 단계에 알려줌)
+D3D11_INPUT_ELEMENT_DESC layout[] = {
+    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }, // 3개 들어가니 size는 12바이트
+
+
+    
+// --- [5. 정석 게임 루프] ---
+MSG msg = { 0 };
+while (WM_QUIT != msg.message) {
+    // (1) 입력 단계: PeekMessage는 메시지가 없어도 바로 리턴함 (Non-blocking)
+    if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+    else {
+        // (2) 업데이트 단계: 여기서 캐릭터의 위치나 로직을 계산함
+        // (과제: GetAsyncKeyState 등을 써서 posX, posY를 변경하셈)
+
+        // (3) 출력 단계: 변한 데이터를 바탕으로 화면에 그림
+        ...
+        
+        // 최종 그리기
+        // Draw(이번 호출에서 그릴 정점(Vertex)의 개수 , 정점 버퍼의 어느 인덱스부터 읽기 시작할 것인가)
+        g_pImmediateContext->Draw(3, 0);
+
+        // 화면 교체 (프론트 버퍼와 백 버퍼 스왑)
+        /* Present(a,b)
+        * 첫 번째 인자 (a): SyncInterval (V-Sync 설정)
+        *      - 0:     즉시 출력. 모니터가 화면을 갱신하든 말든 상관없이 다 그렸으면 바로 화면을 교체함. (FPS가 무제한으로 올라가며 화면 찢어짐 발생 가능)
+        *      - 1~4:   수직 동기화(V-Sync) 활성화.
+        *               1은 모니터 주사율(60Hz 등)에 맞춰서 기다렸다가 화면 스왑.
+        *               2/3/4 는 모니터가 화면을 2/3/4번 그릴 때마다 스왑
+        * 두 번째 인자 (b): Flags (출력 옵션)
+        *      - 0:                         일반적인 출력임.
+        *        DXGI_PRESENT_TEST:         실제로 화면을 바꾸지는 않고, 장치가 준비되었는지 테스트만 할 때 씀.
+        *        DXGI_PRESENT_DO_NOT_WAIT:  만약 GPU가 이전 프레임을 처리하느라 바쁘면 기다리지 않고 바로 에러를 뱉게 함.
+        */
+        g_pSwapChain->Present(0, 0);
+    }
+}
+
+--> Lecture02-GameLoop
