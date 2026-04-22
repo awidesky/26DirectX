@@ -20,6 +20,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="memo.md" />
+    <Text Include="memo.txt" />
   </ItemGroup>
 </Project>
