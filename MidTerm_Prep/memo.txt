@@ -45,6 +45,14 @@ D3D11_INPUT_ELEMENT_DESC layout[] = {
 
     
 // --- [5. 정석 게임 루프] ---
+ 3. 게임 루프의 3단계 책임 (Role)
+    (1) Process Input: "사용자가 무엇을 했는가?"
+        - 메시지 큐를 비우거나 하드웨어 상태를 스캔하여 '의도'를 파악함.
+    (2) Update Game State: "세상의 법칙을 적용하면 어떻게 변하는가?"
+        - 물리 계산, AI 판단, 충돌 체크 등 모든 '데이터'를 계산함. (그래픽 작업 안 함!)
+    (3) Render Frame: "변한 세상을 시각화하라!"
+        - 계산 완료된 데이터를 GPU에 전달하여 화면에 그림. (로직 계산 안 함!)
+
 MSG msg = { 0 };
 while (WM_QUIT != msg.message) {
     // (1) 입력 단계: PeekMessage는 메시지가 없어도 바로 리턴함 (Non-blocking)

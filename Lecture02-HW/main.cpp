@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <stdio.h>
+#include <cmath>
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
@@ -24,6 +25,7 @@ struct {
     bool isRunning;
 } g_gameContext;
 ID3D11Device* g_pd3dDevice = nullptr;          // 리소스 생성자 (공장)
+// # 명령을 즉시 GPU로 보냄(Immediate <-> Deferred)
 ID3D11DeviceContext* g_pImmediateContext = nullptr;   // 그리기 명령 수행 (일꾼)
 IDXGISwapChain* g_pSwapChain = nullptr;          // 화면 전환 (더블 버퍼링)
 ID3D11RenderTargetView* g_pRenderTargetView = nullptr;   // 그림을 그릴 도화지(View)
@@ -144,6 +146,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     g_pd3dDevice->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &pShader);
 
     // 정점의 데이터 형식을 정의 (IA 단계에 알려줌)
+    // # D3D11_INPUT_PER_VERTEX_DATA는 정점마다, D3D11_INPUT_PER_INSTANCE_DATA는 인스턴스마다 데이터가 바뀐다
+    // # 인스턴스마다 데이터 바뀌지 않으니없으니 InstanceDataStepRate 쓴다
     D3D11_INPUT_ELEMENT_DESC layout[] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }, // 3개 들어가니 size는 12바이트
@@ -153,15 +157,17 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     vsBlob->Release(); psBlob->Release(); // 컴파일용 임시 메모리 해제
 
     // 4. 정점 버퍼 생성, 삼각형 두개를 그린다.
+    constexpr float r = 0.5f;
+    constexpr float pi = 3.14159265f;
     struct {
         float x, y, z;
     } relativeVertexPos[6] = { // x값은 0.5(길이) * cos30'
-        {  0.4330127f,  0.25f * aspect, 0.5f },   // 30°
-        {  0.0f,       -0.5f  * aspect,  0.5f },   // 270°
-        { -0.4330127f,  0.25f * aspect, 0.5f },   // 150°
-        { -0.4330127f, -0.25f * aspect, 0.5f },   // 210°
-        {  0.0f,        0.5f  * aspect,  0.5f },   // 90°
-        {  0.4330127f, -0.25f * aspect, 0.5f }    // 330°
+        {  r * cos(pi / 6),  r / 2 * aspect, 0.5f },   // 30°
+        {  0.0f           , -r     * aspect, 0.5f },   // 270°
+        { -r * cos(pi / 6),  r / 2 * aspect, 0.5f },   // 150°
+        { -r * cos(pi / 6), -r / 2 * aspect, 0.5f },   // 210°
+        {  0.0f           ,  r     * aspect, 0.5f },   // 90°
+        {  r * cos(pi / 6), -r / 2 * aspect, 0.5f }    // 330°
     };
 	Vertex vertices[] = {
 		{ relativeVertexPos[0].x, relativeVertexPos[0].y, relativeVertexPos[0].z, 1,0,0,1 },
@@ -185,7 +191,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
         // 1. 입력: 사용자가 무엇을 했는가? 있다면 처리
         if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+            // # 가상 키 메시지(Virtual-key messages)를 문자 메시지(Character messages)로 변환
+            // # 키보드에서 문자가 입력될 때 발생하는 WM_KEYDOWN과 WM_KEYUP 메시지를 분석하여 WM_CHAR 메시지를 생성하고 메시지 큐에 추가.
+            // # 이 함수를 호출하지 않으면 WM_CHAR 메시지가 생성되지 않아, 문자 입력(텍스트 입력창 등)을 처리할 수 없
             TranslateMessage(&msg);
+            // # 메시지를 윈도우 프로시저(WndProc)로 전달.
             DispatchMessage(&msg);
         }
 
@@ -225,6 +235,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
         g_pImmediateContext->IASetInputLayout(pInputLayout);
         UINT stride = sizeof(Vertex), offset = 0;
+
+        // # 여기의 StartSlot이 D3D11_INPUT_ELEMENT_DESC layout[]의 InputSlot(0)이다
+        // # 여러 버퍼 쓸 때 의미 있음 (예: 위치 버퍼 / 색상 버퍼 분리)
         g_pImmediateContext->IASetVertexBuffers(0, 1, &pVBuffer, &stride, &offset);
 
         // Primitive Topology 설정: 삼각형 리스트로 연결하라!
