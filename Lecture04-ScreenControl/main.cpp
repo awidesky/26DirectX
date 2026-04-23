@@ -155,6 +155,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             if (GetAsyncKeyState('F') & 0x0001) {
                 g_Config.IsFullscreen = !g_Config.IsFullscreen;
                 g_pSwapChain->SetFullscreenState(g_Config.IsFullscreen, nullptr);
+                // g_Config.NeedsResize = true; // # 이거 없으면 RebuildVideoResources 안돌아감
             }
             if (GetAsyncKeyState('1') & 0x0001) { g_Config.Width = 800; g_Config.Height = 600; g_Config.NeedsResize = true; }
             if (GetAsyncKeyState('2') & 0x0001) { g_Config.Width = 1280; g_Config.Height = 720; g_Config.NeedsResize = true; }
@@ -180,7 +181,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             g_pImmediateContext->Draw(3, 0);
 
 
-            // # 2를 주면 프레임이 반이 된다
+            // # SyncInterval에 2를 주면 프레임이 반이 된다
+            // # 0: 즉시 제시하며 동기화하지 않습니다. 1 ~ 4: n번째 수직 동기화 이후에 제시하도록 동기화합니다.
             g_pSwapChain->Present(g_Config.VSync, 0); // V-Sync 활성화
         }
     }

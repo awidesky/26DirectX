@@ -123,7 +123,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     RECT rc = { 0, 0, g_Config.Width, g_Config.Height };
     AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-    HWND hWnd = CreateWindowW(L"DX11MoveClass", L"Arrows: Move | W, A: Rotate | 1, 2: Resize",
+    HWND hWnd = CreateWindowW(L"DX11MoveClass", L"Arrows: Move | A, D: Rotate | 1, 2: Resize",
         WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance, nullptr);
     ShowWindow(hWnd, nCmdShow);
 
