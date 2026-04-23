@@ -53,6 +53,15 @@ D3D11_INPUT_ELEMENT_DESC layout[] = {
     (3) Render Frame: "변한 세상을 시각화하라!"
         - 계산 완료된 데이터를 GPU에 전달하여 화면에 그림. (로직 계산 안 함!)
 
+    /*
+     * [메시지 루프 (The Message Loop)]
+     * 1. GetMessage: OS의 메시지 큐에서 메시지가 올 때까지 '무한 대기'함.
+     * 2. TranslateMessage: 키보드 메시지를 문자 데이터(WM_CHAR)로 변환함.
+     * 3. DispatchMessage: 이 함수가 실행되면 비로소 'WndProc'이 호출되어 실행됨.
+     *
+     * ※ 주의: 이 방식은 '이벤트'가 없으면 멈춰 있으므로(Wait),
+     * 실시간 게임 루프를 만들 때는 나중에 PeekMessage로 교체하게 됨.
+     */
 MSG msg = { 0 };
 while (WM_QUIT != msg.message) {
     // (1) 입력 단계: PeekMessage는 메시지가 없어도 바로 리턴함 (Non-blocking)
@@ -87,4 +96,7 @@ while (WM_QUIT != msg.message) {
     }
 }
 
---> Lecture02-GameLoop
+ 5. 구현 시 주의사항 (Clamping)
+    - 컴퓨터가 순간적으로 렉(Lag)이 걸려 DeltaTime이 너무 커지면(예: 1초 이상),
+      물체가 벽을 뚫고 텔레포트하는 버그가 생길 수 있음.
+    - 그래서 엔진에서는 보통 dt = min(dt, 0.1f) 정도로 최대치를 제한하는 처리를 함.
