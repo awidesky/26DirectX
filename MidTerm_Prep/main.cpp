@@ -410,7 +410,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     wcex.lpszClassName = L"DX11GameLoopClass";
     RegisterClassExW(&wcex);
 
-    HWND hWnd = CreateWindowW(L"DX11GameLoopClass", L"과제: 움직이는 육망성 만들기 (12211723 홍성민)",
+    HWND hWnd = CreateWindowW(L"DX11GameLoopClass", L"움직이는 5각별(오망성) 만들기",
         WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, nullptr, nullptr, hInstance, nullptr);
     if (!hWnd) return -1;
     ShowWindow(hWnd, nCmdShow);
@@ -459,27 +459,28 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
     // 4. 정점 버퍼 생성, 삼각형 두개를 그린다.
     constexpr float PI = 3.14159265f;
+    constexpr float PI2_5 = 2 * PI / 5;
     constexpr float R = 0.5f;
-    constexpr float r = R * 0.382f;
+    constexpr float r = R * 0.381966f;
     // radians = degrees * (PI / 180.0);
     Position outer[5] = {
-        { R * cos(PI / 10 + 1 * PI / 5), R * sin(PI / 10 + 1 * PI / 5), 0.5f },
-        { R * cos(PI / 10 + 0 * PI / 5), R * sin(PI / 10 + 0 * PI / 5), 0.5f },
-        { R * cos(PI / 10 + 4 * PI / 5), R * sin(PI / 10 + 4 * PI / 5), 0.5f },
-        { R * cos(PI / 10 + 3 * PI / 5), R * sin(PI / 10 + 3 * PI / 5), 0.5f },
-        { R * cos(PI / 10 + 2 * PI / 5), R * sin(PI / 10 + 2 * PI / 5), 0.5f }
+        { R * cos(PI / 10 + 0 * PI2_5), aspect * R * sin(PI / 10 + 0 * PI2_5), 0.5f },
+        { R * cos(PI / 10 + 1 * PI2_5), aspect * R * sin(PI / 10 + 1 * PI2_5), 0.5f },
+        { R * cos(PI / 10 + 2 * PI2_5), aspect * R * sin(PI / 10 + 2 * PI2_5), 0.5f },
+        { R * cos(PI / 10 + 3 * PI2_5), aspect * R * sin(PI / 10 + 3 * PI2_5), 0.5f },
+        { R * cos(PI / 10 + 4 * PI2_5), aspect * R * sin(PI / 10 + 4 * PI2_5), 0.5f },
     };
 	Position inner[5] = {
-        { r * cos(PI / 5 + 1 * PI / 5), r * sin(PI / 5 + 1 * PI / 5), 0.5f },
-        { r * cos(PI / 5 + 0 * PI / 5), r * sin(PI / 5 + 0 * PI / 5), 0.5f },
-        { r * cos(PI / 5 + 4 * PI / 5), r * sin(PI / 5 + 4 * PI / 5), 0.5f },
-        { r * cos(PI / 5 + 3 * PI / 5), r * sin(PI / 5 + 3 * PI / 5), 0.5f },
-        { r * cos(PI / 5 + 2 * PI / 5), r * sin(PI / 5 + 2 * PI / 5), 0.5f }
+        { r * cos(0.942478  + 0 * PI2_5), aspect * r * sin(0.942478  + 0 * PI2_5), 0.5f },
+        { r * cos(0.942478  + 1 * PI2_5), aspect * r * sin(0.942478  + 1 * PI2_5), 0.5f },
+        { r * cos(0.942478  + 2 * PI2_5), aspect * r * sin(0.942478  + 2 * PI2_5), 0.5f },
+        { r * cos(0.942478  + 3 * PI2_5), aspect * r * sin(0.942478  + 3 * PI2_5), 0.5f },
+        { r * cos(0.942478  + 4 * PI2_5), aspect * r * sin(0.942478  + 4 * PI2_5), 0.5f },
     };
     Position relativeVertexPos[9] = {
-        outer[0], inner[1], outer[3],
-        outer[0], outer[2], inner[3],
-        outer[4], outer[1], inner[2]
+        outer[1], outer[4], inner[2],
+        outer[0], inner[3], outer[2],
+        outer[1], inner[4], outer[3],
     };
     Vertex vertices[] = {
         { relativeVertexPos[0].x, relativeVertexPos[0].y, relativeVertexPos[0].z, 1,0,0,1 },
