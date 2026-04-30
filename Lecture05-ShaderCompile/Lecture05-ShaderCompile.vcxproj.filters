@@ -23,13 +23,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="VS.hlsl">
+    <None Include="Basic.fx">
       <Filter>Shader</Filter>
     </None>
     <None Include="PS.hlsl">
       <Filter>Shader</Filter>
     </None>
-    <None Include="Basic.fx">
+    <None Include="VS.hlsl">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

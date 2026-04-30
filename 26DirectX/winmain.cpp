@@ -1,5 +1,8 @@
 /*
 ================================================================================
+
+  # 중간고사 답안
+
  [Engine Architecture]
  1. WindowContext: Win32 창 생성 및 메시지 루프 관리
  2. GraphicsContext: DX11 디바이스, 스왑체인, 셰이더 컴파일 및 영상 설정 관리
@@ -399,13 +402,47 @@ public:
 };
 
 
+class GameSystem {
+    // # inline 변수로 선언하면 클래스 외부에 정의를 넣어 줄 필요 없음, 다만 C++17 이상이 필요함
+    static inline GameSystem* m_pInstance;
+
+    WindowContext win;
+    GraphicsContext gfx;
+    DeltaTime timer;
+
+    GameSystem() {}
+
+    // 복사 방지
+    GameSystem(const GameSystem&) = delete;
+    GameSystem& operator=(const GameSystem&) = delete;
+
+public:
+    void Initialize(HINSTANCE hInst, int w, int h, LRESULT(CALLBACK* wndProc)(HWND, UINT, WPARAM, LPARAM)) {
+        win.Initialize(hInst, w, h, wndProc);
+        gfx.InitDX(win.hWnd, w, h);
+    }
+
+    WindowContext& GetWin() { return win; }
+    GraphicsContext& GetGfx() { return gfx; }
+    DeltaTime& GetTimer() { return timer; }
+
+    static GameSystem* GetInstance() {
+        if (m_pInstance == nullptr) {
+            m_pInstance = new GameSystem();
+        }
+        return m_pInstance;
+    }
+    static void Release() {
+        if (m_pInstance) {
+            delete m_pInstance;
+            m_pInstance = nullptr;
+        }
+    }
+};
 
 class GameLoop
 {
 public:
-    WindowContext win;
-    GraphicsContext gfx;
-    DeltaTime timer;
     std::vector<GameObject*> world;
     bool isRunning = true;
 
@@ -440,12 +477,14 @@ public:
 
     void Initialize(HINSTANCE hInst, LRESULT(CALLBACK* wndProc)(HWND, UINT, WPARAM, LPARAM))
     {
-        win.Initialize(hInst, 800, 600, wndProc);
-        gfx.InitDX(win.hWnd, 800, 600);
+        GameSystem::GetInstance()->Initialize(hInst, 800, 600, wndProc);
     }
 
     void Input()
     {
+        auto& win = GameSystem::GetInstance()->GetWin();
+        auto& gfx = GameSystem::GetInstance()->GetGfx();
+
         if (GetAsyncKeyState(VK_ESCAPE) & 0x8000)
             isRunning = false;
         if (GetAsyncKeyState('F') & 0x0001)
@@ -483,18 +522,21 @@ public:
 
     void Update()
     {
-        float dt = timer.GetDelta();
+        float dt = GameSystem::GetInstance()->GetTimer().GetDelta();
         for (int i = 0; i < (int)world.size(); i++)
         {
             if (world[i] != nullptr)
             {
-                world[i]->Update(dt, &gfx);
+                world[i]->Update(dt, &GameSystem::GetInstance()->GetGfx());
             }
         }
     }
 
     void Render()
     {
+        auto& win = GameSystem::GetInstance()->GetWin();
+        auto& gfx = GameSystem::GetInstance()->GetGfx();
+
         float col[] = { 0.1f, 0.2f, 0.3f, 1.0f };
         gfx.ImmediateContext->ClearRenderTargetView(gfx.RTV, col);
 
@@ -547,6 +589,7 @@ int WINAPI WinMain(HINSTANCE hI, HINSTANCE, LPSTR, int nS)
 {
     GameLoop gEngine;
     gEngine.Initialize(hI, GlobalWndProc);
+    auto& gfx = GameSystem::GetInstance()->GetGfx();
 
     std::string triShader = R"(
         cbuffer cb0 : register(b0) { matrix matWorld; };
@@ -560,8 +603,8 @@ int WINAPI WinMain(HINSTANCE hI, HINSTANCE, LPSTR, int nS)
         }
         float4 PS(PS_IN input) : SV_Target { return input.col; }
     )";;
-    ID3DBlob* vsBlob = gEngine.gfx.CompileShader(triShader, "VS", "vs_5_0");
-    ID3DBlob* psBlob = gEngine.gfx.CompileShader(triShader, "PS", "ps_5_0");
+    ID3DBlob* vsBlob = gfx.CompileShader(triShader, "VS", "vs_5_0");
+    ID3DBlob* psBlob = gfx.CompileShader(triShader, "PS", "ps_5_0");
 
 
     // ====================================================
@@ -599,21 +642,21 @@ int WINAPI WinMain(HINSTANCE hI, HINSTANCE, LPSTR, int nS)
     }
 
     // 리소스 생성 (황금별용)
-    gEngine.gfx.Device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), NULL, &goldMesh->pVS);
-    gEngine.gfx.Device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), NULL, &goldMesh->pPS);
+    gfx.Device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), NULL, &goldMesh->pVS);
+    gfx.Device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), NULL, &goldMesh->pPS);
 
     D3D11_BUFFER_DESC bd = { 0 };
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.ByteWidth = sizeof(Vertex) * (UINT)vGold.size();
     bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     D3D11_SUBRESOURCE_DATA sd = { vGold.data() };
-    gEngine.gfx.Device->CreateBuffer(&bd, &sd, &goldMesh->vBuffer);
+    gfx.Device->CreateBuffer(&bd, &sd, &goldMesh->vBuffer);
 
     D3D11_INPUT_ELEMENT_DESC ied[] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
     };
-    gEngine.gfx.Device->CreateInputLayout(ied, 2, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &goldMesh->pInputLayout);
+    gfx.Device->CreateInputLayout(ied, 2, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &goldMesh->pInputLayout);
 
 
     // 황금별 객체 등록 (PlayerController 포함)
@@ -650,14 +693,14 @@ int WINAPI WinMain(HINSTANCE hI, HINSTANCE, LPSTR, int nS)
         }
 
         // 리소스 생성 (각 별마다 고유 색상 버퍼 생성)
-        gEngine.gfx.Device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), NULL, &randMesh->pVS);
-        gEngine.gfx.Device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), NULL, &randMesh->pPS);
+        gfx.Device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), NULL, &randMesh->pVS);
+        gfx.Device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), NULL, &randMesh->pPS);
 
-        gEngine.gfx.Device->CreateInputLayout(ied, 2, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &randMesh->pInputLayout);
+        gfx.Device->CreateInputLayout(ied, 2, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &randMesh->pInputLayout);
 
         bd.ByteWidth = sizeof(Vertex) * (UINT)vRand.size();
         sd.pSysMem = vRand.data();
-        gEngine.gfx.Device->CreateBuffer(&bd, &sd, &randMesh->vBuffer);
+        gfx.Device->CreateBuffer(&bd, &sd, &randMesh->vBuffer);
 
         GameObject* bgStar = new GameObject(disPos(gen), disPos(gen), 0);
         float s = disScale(gen);
@@ -677,6 +720,8 @@ int WINAPI WinMain(HINSTANCE hI, HINSTANCE, LPSTR, int nS)
 
 
     gEngine.Run();
+
+    GameSystem::Release();
 
     return 0;
 }
