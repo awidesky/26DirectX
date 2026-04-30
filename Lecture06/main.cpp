@@ -24,7 +24,7 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
-   // --- [전역 객체] ---
+  // --- [전역 객체] ---
 ID3D11Device* g_pd3dDevice = nullptr;
 ID3D11DeviceContext* g_pImmediateContext = nullptr;
 IDXGISwapChain* g_pSwapChain = nullptr;
@@ -110,7 +110,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow) {
     // 방식 3: 외부 통합 파일 (.fx) - 파일이 있어야 작동함
     CompileShader(L"Basic.fx", true, "VS", "vs_4_0", &vsBlob);
     CompileShader(L"Basic.fx", true, "PS", "ps_4_0", &psBlob);
-    
+
     g_pd3dDevice->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &g_pVertexShader);
     g_pd3dDevice->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &g_pPixelShader);
 
@@ -161,4 +161,4 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow) {
     if (g_pd3dDevice) g_pd3dDevice->Release();
 
     return 0;
-}
+} 
