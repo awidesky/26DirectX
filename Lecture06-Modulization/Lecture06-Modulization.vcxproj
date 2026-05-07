@@ -24,7 +24,7 @@
     <ProjectGuid>{bc472832-3559-48b4-a011-afcc61bc9deb}</ProjectGuid>
     <RootNamespace>Lecture06Modulization</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>Lecture07-Modulization</ProjectName>
+    <ProjectName>Lecture08-Modulization</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

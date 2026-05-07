@@ -1,5 +1,5 @@
 /*
- * [포인트: 셰이더 컴파일의 4가지 길]
+ * [포인트: 셰이더 컴파일의 2가지 길]
  * 1. CompileFromString: 코드 내부에 텍스트로 존재 (빠른 테스트용)
  * 2. CompileFromFile: 외부 파일(.hlsl)에서 읽기 (실무 표준)
  *  - Separate Files: VS와 PS를 완전히 다른 파일로 관리 (대규모 프로젝트)

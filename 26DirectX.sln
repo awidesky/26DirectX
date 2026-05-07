@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "26DirectX", "26DirectX\26DirectX.vcxproj", "{26E17C40-AD46-40DC-A70F-84F9A69CCE37}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXMidTerm(Lec1~5)", "26DirectX\26DirectX.vcxproj", "{26E17C40-AD46-40DC-A70F-84F9A69CCE37}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lecture01-win32", "Lecture01\Lecture01.vcxproj", "{F3B21CCF-8A24-4284-ABDA-2F0C19DD3B79}"
 EndProject
@@ -39,7 +39,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lecture06-ShaderCompile", "
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lecture04-GameWorld", "Lecture04-GameWorld\Lecture04-GameWorld.vcxproj", "{F106C7BD-E3A3-4410-A7C9-BF32491327DC}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lecture07-ShaderBuffer", "Lecture06\Lecture06.vcxproj", "{AEAE6AD8-BA5E-4F45-A2AE-F80543662984}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lecture08-ShaderCom", "Lecture06\Lecture06.vcxproj", "{AEAE6AD8-BA5E-4F45-A2AE-F80543662984}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lecture06_Singleton", "Lecture06_Singleton\Lecture06_Singleton.vcxproj", "{590A5BAE-BA76-4D6B-AC79-D789341EAAA2}"
 EndProject
@@ -50,8 +50,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Midterm_Example2", "Midterm_Example2\Midterm_Example2.vcxproj", "{9EA27A52-B1C9-4859-A8D4-88A460E1A81E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MidTerm_Prep", "MidTerm_Prep\MidTerm_Prep.vcxproj", "{AF123C80-EAC1-430E-8236-62AE7E6A030F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lecture08-Modulization", "Lecture06-Modulization\Lecture06-Modulization.vcxproj", "{BC472832-3559-48B4-A011-AFCC61BC9DEB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lecture07-Modulization", "Lecture06-Modulization\Lecture06-Modulization.vcxproj", "{BC472832-3559-48B4-A011-AFCC61BC9DEB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lecture07_Material", "Lecture07_ShaderCompile2\Lecture07_ShaderCompile2.vcxproj", "{A61C250B-CE96-48D5-B69A-B299A4C8A4B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -261,6 +262,14 @@ Global
 		{BC472832-3559-48B4-A011-AFCC61BC9DEB}.Release|x64.Build.0 = Release|x64
 		{BC472832-3559-48B4-A011-AFCC61BC9DEB}.Release|x86.ActiveCfg = Release|Win32
 		{BC472832-3559-48B4-A011-AFCC61BC9DEB}.Release|x86.Build.0 = Release|Win32
+		{A61C250B-CE96-48D5-B69A-B299A4C8A4B2}.Debug|x64.ActiveCfg = Debug|x64
+		{A61C250B-CE96-48D5-B69A-B299A4C8A4B2}.Debug|x64.Build.0 = Debug|x64
+		{A61C250B-CE96-48D5-B69A-B299A4C8A4B2}.Debug|x86.ActiveCfg = Debug|Win32
+		{A61C250B-CE96-48D5-B69A-B299A4C8A4B2}.Debug|x86.Build.0 = Debug|Win32
+		{A61C250B-CE96-48D5-B69A-B299A4C8A4B2}.Release|x64.ActiveCfg = Release|x64
+		{A61C250B-CE96-48D5-B69A-B299A4C8A4B2}.Release|x64.Build.0 = Release|x64
+		{A61C250B-CE96-48D5-B69A-B299A4C8A4B2}.Release|x86.ActiveCfg = Release|Win32
+		{A61C250B-CE96-48D5-B69A-B299A4C8A4B2}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
