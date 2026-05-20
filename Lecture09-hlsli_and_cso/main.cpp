@@ -65,10 +65,8 @@ int WINAPI WinMain(HINSTANCE hI, HINSTANCE, LPSTR, int nS)
 
     // 셰이더 컴파일 및 생성
     ShaderSet starShaders;
-
     // 버텍스 셰이더와 레이아웃 로드
     gEngine.gfx.LoadVertexShader(&starShaders, L"vs", ied, ARRAYSIZE(ied));
-
     // 픽셀 셰이더 로드
     gEngine.gfx.LoadPixelShader(&starShaders, L"ps");
 
