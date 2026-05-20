@@ -21,11 +21,6 @@
  *    - Visual Studio 프로젝트 설정에서 .hlsli 파일은 '빌드에서 제외'하거나 
  *      '헤더'로 분류해야 함 (컴파일 대상이 아니라 포함 대상이기 때문).
  */
-struct VS_IN
-{
-    float3 pos : POSITION;
-    float4 col : COLOR;
-};
 struct PS_IN
 {
     float4 pos : SV_POSITION;

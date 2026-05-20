@@ -1,10 +1,11 @@
 /**
  * [DirectX 11 Shader Management & Compilation Guide]
  *
+ * - 변경부분 : GraphicsContext.hpp, Shader파일, main.cpp 참조
+ * 
  * 1. CSO (Compiled Shader Object) 란?
  *    - HLSL 소스 코드(.hlsl)를 마이크로소프트의 fxc(Legacy)나 dxc 컴파일러를 통해
  *      GPU가 이해할 수 있는 바이너리 형태(Bytecode)로 구워낸 결과물 파일임.
- *    - CSO는 Compiled Shader Object의 약자임.
  *
  * 2. CSO 사용의 장단점
  *    - 장점 (Efficiency & Security):
