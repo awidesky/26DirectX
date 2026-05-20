@@ -54,6 +54,8 @@ public:
 
 
 
+
+
     ShaderSet CompileAndCreate(const void* source, size_t length, bool isFile, D3D11_INPUT_ELEMENT_DESC* ied, UINT iedCount)
     {
         ShaderSet res;
@@ -68,31 +70,8 @@ public:
             hr = D3DCompileFromFile((LPCWSTR)source, nullptr, nullptr, "VS", "vs_5_0", 0, 0, &vsBlob, &errBlob);
             if (FAILED(hr))
             {
-                // 1. 컴파일러가 뱉은 문법 에러가 있는 경우 (Syntax Error 등)
-                if (errBlob)
-                {
-                    //VS 출력창에 직접 출력
-                    OutputDebugStringA((char*)errBlob->GetBufferPointer());
-                    errBlob->Release();
-                }
-                // 2. 컴파일러도 못 가고 시스템 수준에서 터진 경우 (File Not Found 등)
-                else
-                {
-                    // 파일이 없는 경우 hr은 보통 0x80070002 (ERROR_FILE_NOT_FOUND)
-                    if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
-                    {
-                        MessageBoxA(NULL, "셰이더 파일을 찾을 수 없음!", "Critical Error", MB_ICONERROR);
-                    }
-                    else
-                    {
-                        // 기타 알 수 없는 에러 번호 출력
-                        char 복구메시지[256];
-                        sprintf_s(복구메시지, "에러 발생! HRESULT: 0x%08X", hr);
-                        MessageBoxA(NULL, 복구메시지, "System Error", MB_ICONERROR);
-                    }
-                }
+                HandleCompileError(hr, errBlob, L"VS");
                 if (vsBlob) vsBlob->Release();
-
                 return res;
             }
 
@@ -100,29 +79,7 @@ public:
             hr = D3DCompileFromFile((LPCWSTR)source, nullptr, nullptr, "PS", "ps_5_0", 0, 0, &psBlob, &errBlob);
             if (FAILED(hr))
             {
-                // 1. 컴파일러가 뱉은 문법 에러가 있는 경우 (Syntax Error 등)
-                if (errBlob)
-                {
-                    //VS 출력창에 직접 출력
-                    OutputDebugStringA((char*)errBlob->GetBufferPointer());
-                    errBlob->Release();
-                }
-                // 2. 컴파일러도 못 가고 시스템 수준에서 터진 경우 (File Not Found 등)
-                else
-                {
-                    // 파일이 없는 경우 hr은 보통 0x80070002 (ERROR_FILE_NOT_FOUND)
-                    if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
-                    {
-                        MessageBoxA(NULL, "셰이더 파일을 찾을 수 없음!", "Critical Error", MB_ICONERROR);
-                    }
-                    else
-                    {
-                        // 기타 알 수 없는 에러 번호 출력
-                        char 복구메시지[256];
-                        sprintf_s(복구메시지, "에러 발생! HRESULT: 0x%08X", hr);
-                        MessageBoxA(NULL, 복구메시지, "System Error", MB_ICONERROR);
-                    }
-                }
+                HandleCompileError(hr, errBlob, L"PS");
                 if (psBlob) psBlob->Release();
                 return res;
             }
@@ -133,11 +90,8 @@ public:
             hr = D3DCompile(source, length, nullptr, nullptr, nullptr, "VS", "vs_5_0", 0, 0, &vsBlob, &errBlob);
             if (FAILED(hr))
             {
-                if (errBlob)
-                {
-                    printf("[Shader Error] VS Compile Error:\n%s\n", (char*)errBlob->GetBufferPointer());
-                    errBlob->Release();
-                }
+                HandleCompileError(hr, errBlob, L"VS");
+                if (vsBlob) vsBlob->Release();
                 return res;
             }
 
@@ -145,12 +99,8 @@ public:
             hr = D3DCompile(source, length, nullptr, nullptr, nullptr, "PS", "ps_5_0", 0, 0, &psBlob, &errBlob);
             if (FAILED(hr))
             {
-                if (errBlob)
-                {
-                    printf("[Shader Error] PS Compile Error:\n%s\n", (char*)errBlob->GetBufferPointer());
-                    errBlob->Release();
-                }
-                if (vsBlob) vsBlob->Release();
+                HandleCompileError(hr, errBlob, L"PS");
+                if (psBlob) psBlob->Release();
                 return res;
             }
         }
@@ -168,5 +118,102 @@ public:
         if (psBlob) psBlob->Release();
 
         return res;
+    }
+
+    /**
+ * [셰이더 로딩 전략]
+ * 1. .cso 파일 존재 여부 확인 -> 있으면 D3DReadFileToBlob으로 즉시 로드 (성능 최적화)
+ * 2. .cso 없음 -> .hlsl 파일 확인 -> D3DCompileFromFile로 실시간 빌드 (유연성)
+ * 3. 둘 다 없음 -> 에러 메시지 출력 후 빈 구조체 반환
+ */
+ /**
+* [Vertex Shader 전용 로더]
+* - CSO 우선 시도 후 HLSL 컴파일
+* - Input Layout 생성 포함
+*/
+    void LoadVertexShader(ShaderSet* res, const std::wstring& shaderName, D3D11_INPUT_ELEMENT_DESC* ied, UINT iedCount)
+    {
+        if (!res) return;
+
+        ID3DBlob* vsBlob = nullptr;
+        ID3DBlob* errBlob = nullptr;
+        std::wstring csoPath = shaderName + L".cso";
+        std::wstring hlslPath = shaderName + L".hlsl";
+
+        // 1. CSO 시도
+        HRESULT hr = D3DReadFileToBlob(csoPath.c_str(), &vsBlob);
+
+        // 2. 실패 시 HLSL 컴파일 시도
+        if (FAILED(hr))
+        {
+            hr = D3DCompileFromFile(hlslPath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+                "main", "vs_5_0", 0, 0, &vsBlob, &errBlob);
+            if (FAILED(hr))
+            {
+                HandleCompileError(hr, errBlob, hlslPath.c_str());
+                return;
+            }
+        }
+
+        // 3. 리소스 및 레이아웃 생성
+        if (vsBlob)
+        {
+            Device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &res->vs);
+
+            if (ied)
+            {
+                Device->CreateInputLayout(ied, iedCount, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &res->layout);
+            }
+            vsBlob->Release();
+        }
+    }
+
+    /**
+ * [Pixel Shader 전용 로더]
+ * - CSO 우선 시도 후 HLSL 컴파일
+ */
+    void LoadPixelShader(ShaderSet* res, const std::wstring& shaderName)
+    {
+        if (!res) return;
+
+        ID3DBlob* psBlob = nullptr;
+        ID3DBlob* errBlob = nullptr;
+        std::wstring csoPath = shaderName + L".cso";
+        std::wstring hlslPath = shaderName + L".hlsl";
+
+        // 1. CSO 시도
+        HRESULT hr = D3DReadFileToBlob(csoPath.c_str(), &psBlob);
+
+        // 2. 실패 시 HLSL 컴파일 시도
+        if (FAILED(hr))
+        {
+            hr = D3DCompileFromFile(hlslPath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+                "main", "ps_5_0", 0, 0, &psBlob, &errBlob);
+            if (FAILED(hr))
+            {
+                HandleCompileError(hr, errBlob, hlslPath.c_str());
+                return;
+            }
+        }
+
+        // 3. 리소스 생성
+        if (psBlob)
+        {
+            Device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &res->ps);
+            psBlob->Release();
+        }
+    }
+
+    // 에러 처리를 위한 헬퍼 함수
+    void HandleCompileError(HRESULT hr, ID3DBlob* errBlob, const wchar_t* path) {
+        if (errBlob) {
+            OutputDebugStringA((char*)errBlob->GetBufferPointer());
+            MessageBoxA(NULL, (char*)errBlob->GetBufferPointer(), "Shader Compile Error", MB_ICONERROR);
+            errBlob->Release();
+        }
+        else if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) {
+            std::wstring msg = L"파일을 찾을 수 없습니다: " + std::wstring(path);
+            MessageBoxW(NULL, msg.c_str(), L"File Error", MB_ICONERROR);
+        }
     }
 };
