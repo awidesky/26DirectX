@@ -1,7 +1,8 @@
 #pragma once
 #include "Framework.hpp"
 
-class GraphicsContext {
+class GraphicsContext 
+{
 public:
     ID3D11Device* Device = nullptr;
     ID3D11DeviceContext* ImmediateContext = nullptr;
@@ -10,14 +11,16 @@ public:
     bool IsFullscreen = false;
     int VSync = 1;
 
-    ~GraphicsContext() {
+    ~GraphicsContext() 
+    {
         if (RTV) RTV->Release();
         if (SwapChain) SwapChain->Release();
         if (ImmediateContext) ImmediateContext->Release();
         if (Device) Device->Release();
     }
 
-    bool InitDX(HWND hWnd, int w, int h) {
+    bool InitDX(HWND hWnd, int w, int h) 
+    {
         DXGI_SWAP_CHAIN_DESC sd = {};
         sd.BufferCount = 1;
         sd.BufferDesc.Width = w; sd.BufferDesc.Height = h;
@@ -31,7 +34,8 @@ public:
         return SUCCEEDED(hr) && CreateRTV(w, h);
     }
 
-    bool CreateRTV(int w, int h) {
+    bool CreateRTV(int w, int h) 
+    {
         if (RTV) RTV->Release();
         ID3D11Texture2D* pBB;
         SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBB);
@@ -40,14 +44,16 @@ public:
         return true;
     }
 
-    void Resize(int w, int h) {
+    void Resize(int w, int h) 
+    {
         ImmediateContext->OMSetRenderTargets(0, 0, 0);
         if (RTV) { RTV->Release(); RTV = nullptr; }
         SwapChain->ResizeBuffers(0, w, h, DXGI_FORMAT_UNKNOWN, 0);
         CreateRTV(w, h);
     }
 
-    void SetFullscreen(bool goFull) {
+    void SetFullscreen(bool goFull) 
+    {
         IsFullscreen = goFull;
         SwapChain->SetFullscreenState(goFull, NULL);
     }
@@ -205,13 +211,16 @@ public:
     }
 
     // 에러 처리를 위한 헬퍼 함수
-    void HandleCompileError(HRESULT hr, ID3DBlob* errBlob, const wchar_t* path) {
-        if (errBlob) {
+    void HandleCompileError(HRESULT hr, ID3DBlob* errBlob, const wchar_t* path) 
+    {
+        if (errBlob) 
+        {
             OutputDebugStringA((char*)errBlob->GetBufferPointer());
             MessageBoxA(NULL, (char*)errBlob->GetBufferPointer(), "Shader Compile Error", MB_ICONERROR);
             errBlob->Release();
         }
-        else if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) {
+        else if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) 
+        {
             std::wstring msg = L"파일을 찾을 수 없습니다: " + std::wstring(path);
             MessageBoxW(NULL, msg.c_str(), L"File Error", MB_ICONERROR);
         }

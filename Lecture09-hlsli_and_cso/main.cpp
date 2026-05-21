@@ -92,8 +92,8 @@ int WINAPI WinMain(HINSTANCE hI, HINSTANCE, LPSTR, int nS)
     gMesh->Create(&gEngine.gfx, vStar);
 
     // 4. 머티리얼 생성
-    ColorMaterial* goldMat = new ColorMaterial(starShaders, { 1, 0.8f, 0, 1 }, gEngine.gfx.Device);
-    ColorMaterial* redMat = new ColorMaterial(starShaders, { 1, 0.1f, 0.1f, 1 }, gEngine.gfx.Device);
+    ColorMaterial* goldMat = new ColorMaterial(&starShaders, { 1, 0.8f, 0, 1 }, gEngine.gfx.Device);
+    ColorMaterial* redMat = new ColorMaterial(&starShaders, { 1, 0.1f, 0.1f, 1 }, gEngine.gfx.Device);
 
     // 5. 난수를 이용한 다수의 별 생성
     std::random_device rd;

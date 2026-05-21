@@ -2,15 +2,18 @@
 #include "Framework.hpp"
 #include "GraphicsContext.hpp"
 
-struct Mesh {
+struct Mesh 
+{
     ID3D11Buffer* vBuffer = nullptr;
     UINT vertexCount = 0;
 
-    ~Mesh() {
+    ~Mesh() 
+    {
         if (vBuffer) { vBuffer->Release(); vBuffer = nullptr; }
     }
 
-    void Create(GraphicsContext* gfx, const std::vector<Vertex>& vertices) {
+    void Create(GraphicsContext* gfx, const std::vector<Vertex>& vertices) 
+    {
         vertexCount = (UINT)vertices.size();
 
         D3D11_BUFFER_DESC bd = { 0 };

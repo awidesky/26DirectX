@@ -5,7 +5,8 @@
 // 전방 선언: "자세한 건 나중에 알려줄게, 일단 이런 클래스가 있어"
 class GameObject;
 
-class Component {
+class Component 
+{
 public:
     GameObject* pOwner = nullptr;
     bool isStarted = false;
@@ -17,33 +18,41 @@ public:
     virtual ~Component() {}
 };
 
-class GameObject {
+class GameObject 
+{
 public:
     XMFLOAT3 pos = { 0, 0, 0 };
     XMFLOAT3 rot = { 0, 0, 0 };
     XMFLOAT3 scale = { 1, 1, 1 };
     std::vector<Component*> components;
 
-    GameObject(float x, float y, float z) {
+    GameObject(float x, float y, float z) 
+    {
         pos = { x, y, z };
     }
 
-    ~GameObject() {
+    ~GameObject() 
+    {
         for (auto c : components) delete c;
     }
 
-    void AddComponent(Component* c) {
+    void AddComponent(Component* c) 
+    {
         c->pOwner = this;
         components.push_back(c);
     }
 
-    void Input() {
+    void Input() 
+    {
         for (auto c : components) c->Input();
     }
 
-    void Update(float dt, GraphicsContext* gfx) {
-        for (auto c : components) {
-            if (!c->isStarted) {
+    void Update(float dt, GraphicsContext* gfx) 
+    {
+        for (auto c : components) 
+        {
+            if (!c->isStarted) 
+            {
                 c->Start(gfx);
                 c->isStarted = true;
             }
@@ -51,7 +60,8 @@ public:
         }
     }
 
-    void Render(GraphicsContext* gfx) {
+    void Render(GraphicsContext* gfx) 
+    {
         for (auto c : components) c->Render(gfx);
     }
 };
