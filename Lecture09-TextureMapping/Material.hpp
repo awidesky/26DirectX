@@ -137,6 +137,7 @@ public:
 
 
         // 3. 상수버퍼 오토 바인딩 (b1부터 바인딩함)
+        // # 0번에는 행렬이 있으니 1번부터 간다
         for (int i = 0; i < (int)constantBuffers.size(); ++i)
         {
             context->VSSetConstantBuffers(i + 1, 1, &constantBuffers[i]);

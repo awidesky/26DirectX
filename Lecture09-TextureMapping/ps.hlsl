@@ -20,8 +20,10 @@
 
 float4 main(PS_INPUT input) : SV_TARGET
 {
-    return tex.Sample(sam, input.uv);
+    float4 result = tex.Sample(sam, input.uv);
     
-    //return float4(1, 1, 1, 1);
-    //return colorTint;
+    if (result.r > 7.0f) // # 알파 블렌딩 설정 꺼두면 소용없다!
+        result.a = 0.0f;
+
+    return result;
 }
