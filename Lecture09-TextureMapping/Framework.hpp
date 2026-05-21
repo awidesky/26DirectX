@@ -70,42 +70,40 @@ struct ShaderSet
  * 
  * 
  * 
- */
 
- /*
-  * [강의 노트: 샘플러 스테이트(Sampler State) 완전 정복]
-  *
-  * 1. 샘플러의 본질:
-  *    - 텍스처(이미지)는 연속적인 데이터가 아닌 '픽셀의 격자'임.
-  *    - 샘플러는 셰이더가 "텍스처의 이 좌표(UV)는 무슨 색이야?"라고 물어볼 때,
-  *      주변 픽셀들을 어떻게 해석해서 알려줄지 결정하는 '해석 규칙'임.
-  *
-  * 2. 필터(Filter) 옵션:
-  *    - D3D11_FILTER_MIN_MAG_MIP_LINEAR:
-  *        - 가장 많이 쓰임. 확대/축소 시 인접 픽셀들의 평균값을 계산(Linear)하여 부드럽게 표현함.
-  *    - D3D11_FILTER_MIN_MAG_MIP_POINT:
-  *        - '도트 그래픽' 느낌을 낼 때 필수. 보간 없이 가장 가까운 픽셀 값을 그대로 가져옴.
-  *    - D3D11_FILTER_ANISOTROPIC:
-  *        - 비등방성 필터링. 바닥처럼 비스듬하게 누워있는 텍스처를 멀리서 볼 때
-  *          뭉개지는 현상을 방지하고 선명하게 보여줌(고사양 그래픽용).
-  *
-  * 3. 어드레스 모드(AddressU/V/W):
-  *    - UV 좌표가 [0, 1] 범위를 벗어날 때(예: 1.5, -0.2) 어떻게 처리할지 결정함.
-  *    - D3D11_TEXTURE_ADDRESS_WRAP:
-  *        - 타일처럼 반복됨 (가장 기본).
-  *    - D3D11_TEXTURE_ADDRESS_CLAMP:
-  *        - 끝부분 픽셀 값을 쭉 늘려서 채움 (이미지가 찢어지는 듯한 효과 방지).
-  *    - D3D11_TEXTURE_ADDRESS_BORDER:
-  *        - 지정한 고정 색상(BorderColor)으로 채움.
-  *
-  * 4. 기타 설정:
-  *    - ComparisonFunc:
-  *        - 주로 섀도우 맵(Shadow Map) 등을 만들 때 깊이 값을 비교하는 용도로 사용.
-  *        - 일반 텍스처는 D3D11_COMPARISON_NEVER.
-  *    - MinLOD / MaxLOD:
-  *        - MipMap 수준(Level of Detail)의 범위를 지정함.
-  *        - 0 ~ FLT_MAX로 두면 모든 MipMap 단계를 다 쓰겠다는 뜻임.
-  */
+ * [강의 노트: 샘플러 스테이트(Sampler State) 완전 정복]
+ *
+ * 1. 샘플러의 본질:
+ *    - 텍스처(이미지)는 연속적인 데이터가 아닌 '픽셀의 격자'임.
+ *    - 샘플러는 셰이더가 "텍스처의 이 좌표(UV)는 무슨 색이야?"라고 물어볼 때,
+ *      주변 픽셀들을 어떻게 해석해서 알려줄지 결정하는 '해석 규칙'임.
+ *
+ * 2. 필터(Filter) 옵션:
+ *    - D3D11_FILTER_MIN_MAG_MIP_LINEAR:
+ *        - 가장 많이 쓰임. 확대/축소 시 인접 픽셀들의 평균값을 계산(Linear)하여 부드럽게 표현함.
+ *    - D3D11_FILTER_MIN_MAG_MIP_POINT:
+ *        - '도트 그래픽' 느낌을 낼 때 필수. 보간 없이 가장 가까운 픽셀 값을 그대로 가져옴.
+ *    - D3D11_FILTER_ANISOTROPIC:
+ *        - 비등방성 필터링. 바닥처럼 비스듬하게 누워있는 텍스처를 멀리서 볼 때
+ *          뭉개지는 현상을 방지하고 선명하게 보여줌(고사양 그래픽용).
+ *
+ * 3. 어드레스 모드(AddressU/V/W):
+ *    - UV 좌표가 [0, 1] 범위를 벗어날 때(예: 1.5, -0.2) 어떻게 처리할지 결정함.
+ *    - D3D11_TEXTURE_ADDRESS_WRAP:
+ *        - 타일처럼 반복됨 (가장 기본).
+ *    - D3D11_TEXTURE_ADDRESS_CLAMP:
+ *        - 끝부분 픽셀 값을 쭉 늘려서 채움 (이미지가 찢어지는 듯한 효과 방지).
+ *    - D3D11_TEXTURE_ADDRESS_BORDER:
+ *        - 지정한 고정 색상(BorderColor)으로 채움.
+ *
+ * 4. 기타 설정:
+ *    - ComparisonFunc:
+ *        - 주로 섀도우 맵(Shadow Map) 등을 만들 때 깊이 값을 비교하는 용도로 사용.
+ *        - 일반 텍스처는 D3D11_COMPARISON_NEVER.
+ *    - MinLOD / MaxLOD:
+ *        - MipMap 수준(Level of Detail)의 범위를 지정함.
+ *        - 0 ~ FLT_MAX로 두면 모든 MipMap 단계를 다 쓰겠다는 뜻임.
+ */
 class Texture 
 {
 public:
