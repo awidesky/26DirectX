@@ -56,6 +56,43 @@ public:
         gfx.ImmediateContext->OMSetRenderTargets(1, &gfx.RTV, NULL);
         gfx.ImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+        D3D11_BLEND_DESC blendDesc;
+        ZeroMemory(&blendDesc, sizeof(blendDesc));
+
+        // 독립적인 혼합(Independent Blend)을 끌 경우, RenderTarget[0]의 설정이 모든 타겟에 적용됩니다.
+        blendDesc.AlphaToCoverageEnable = FALSE;
+        blendDesc.IndependentBlendEnable = FALSE;
+
+        // RenderTarget[0] 설정 (기본 출력 타겟)
+        blendDesc.RenderTarget[0].BlendEnable = TRUE; // ★ 알파 블렌딩 활성화!
+
+        // 컬러(RGB) 블렌딩 공식 설정
+        blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;  // 소스(현재 그릴 값)의 알파를 곱함
+        blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA; // 대상(이미 그려진 값)에 (1-소스알파)를 곱함
+        blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;      // 두 값을 더함
+
+        // 알파(A) 채널 블렌딩 공식 설정 (보통 컬러와 맞추거나 더하는 방식을 씁니다)
+        blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+        blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+        blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+
+        // RGB와 Alpha 전 채널의 상태를 업데이트하도록 마스크 설정
+        blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+        ID3D11BlendState* pBlendState = nullptr;
+        HRESULT hr = gfx.Device->CreateBlendState(&blendDesc, &pBlendState);
+        if (FAILED(hr)) {
+            // 에러 처리
+        }
+
+        // 블렌딩에 사용할 상수 벡터 (보통 nullptr이나 기본 배열을 넘깁니다)
+        float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+        UINT sampleMask = 0xffffffff; // 모든 샘플 활성화
+
+        // Output Merger 단계에 블렌드 상태 설정
+        gfx.ImmediateContext->OMSetBlendState(pBlendState, blendFactor, sampleMask);
+
+
         for (auto obj : world) obj->Render(&gfx);
 
         gfx.SwapChain->Present(gfx.VSync, 0);
