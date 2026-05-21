@@ -4,6 +4,7 @@
 //그외 수정내용 : material, meshrenderer
 
 
+#include <iostream>
 
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 #include "GameLoop.hpp"
@@ -46,7 +47,13 @@ int WINAPI WinMain(HINSTANCE hI, HINSTANCE, LPSTR, int nS)
 
 
  // 1. 그릴 문자열 정의 (0~9로 구성)
-    std::string text = "1453223";
+    //int type;
+    //std::cout << "Which font type? : ";
+    //std::cin >> type;
+    std::string text;
+    std::cout << "Numbers? : ";
+    std::cin >> text;
+
     float charWidth = 0.1f; // 사각형 하나의 가로 크기
     float charHeight = 0.3f;
     float uvWidth = 0.1f;  // 1/10 (0~9가 10개이므로)
