@@ -13,9 +13,6 @@ cbuffer CustomData : register(b1)
     float4 colorTint;
 };
 
-
-
-
 struct VS_INPUT
 {
     float3 pos : POSITION;

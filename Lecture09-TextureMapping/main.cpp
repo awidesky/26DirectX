@@ -1,9 +1,7 @@
 //텍스쳐 매핑 관련 예시
 
-//framework.hpp -> texture
-//그외 수정내용 : material, meshrenderer
-
-
+//framework.hpp -> Texture
+//그외 수정내용 : Material, MeshRenderer, GameLoop (Render에 alpha blending)
 
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 #include "GameLoop.hpp"
