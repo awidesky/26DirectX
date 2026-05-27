@@ -65,6 +65,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lecture09-hlsli_and_cso", "
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lecture09-TextureFont", "Lecture09-TextureFont\Lecture09-TextureFont.vcxproj", "{7CECCBB1-4707-45C8-B29C-58E118CC01BB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lecture11-PlayableGame", "Lecture11-PlayableGame\Lecture11-PlayableGame.vcxproj", "{98DE7F8B-8DC3-4A58-A3BF-694D5E96EF1C}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lecture10-FinalGame", "Lecture10-FinalGame\Lecture10-FinalGame.vcxproj", "{E29816CC-7263-4A4F-ACDE-77CB5D1ED16E}"
 EndProject
 Global
@@ -323,6 +325,14 @@ Global
 		{7CECCBB1-4707-45C8-B29C-58E118CC01BB}.Release|x64.Build.0 = Release|x64
 		{7CECCBB1-4707-45C8-B29C-58E118CC01BB}.Release|x86.ActiveCfg = Release|Win32
 		{7CECCBB1-4707-45C8-B29C-58E118CC01BB}.Release|x86.Build.0 = Release|Win32
+		{98DE7F8B-8DC3-4A58-A3BF-694D5E96EF1C}.Debug|x64.ActiveCfg = Debug|x64
+		{98DE7F8B-8DC3-4A58-A3BF-694D5E96EF1C}.Debug|x64.Build.0 = Debug|x64
+		{98DE7F8B-8DC3-4A58-A3BF-694D5E96EF1C}.Debug|x86.ActiveCfg = Debug|Win32
+		{98DE7F8B-8DC3-4A58-A3BF-694D5E96EF1C}.Debug|x86.Build.0 = Debug|Win32
+		{98DE7F8B-8DC3-4A58-A3BF-694D5E96EF1C}.Release|x64.ActiveCfg = Release|x64
+		{98DE7F8B-8DC3-4A58-A3BF-694D5E96EF1C}.Release|x64.Build.0 = Release|x64
+		{98DE7F8B-8DC3-4A58-A3BF-694D5E96EF1C}.Release|x86.ActiveCfg = Release|Win32
+		{98DE7F8B-8DC3-4A58-A3BF-694D5E96EF1C}.Release|x86.Build.0 = Release|Win32
 		{E29816CC-7263-4A4F-ACDE-77CB5D1ED16E}.Debug|x64.ActiveCfg = Debug|x64
 		{E29816CC-7263-4A4F-ACDE-77CB5D1ED16E}.Debug|x64.Build.0 = Debug|x64
 		{E29816CC-7263-4A4F-ACDE-77CB5D1ED16E}.Debug|x86.ActiveCfg = Debug|Win32
