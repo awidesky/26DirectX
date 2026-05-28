@@ -50,7 +50,8 @@ public:
 
     Material() {};
     Material(ShaderSet* s) : shaders(s) {}
-    virtual ~Material() {
+    virtual ~Material() 
+    {
         for (auto cb : constantBuffers) if (cb) cb->Release();
     }
 

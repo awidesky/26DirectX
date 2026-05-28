@@ -17,11 +17,11 @@
 
 using namespace DirectX;
 
-// 1. 공통 데이터 구조체
-struct Vertex 
+// 1. 단색 출력을 위한 Vertex 구조체 정의
+struct Vertex
 {
-    XMFLOAT3 pos;
-    XMFLOAT2 uv;
+    DirectX::XMFLOAT3 pos;
+    DirectX::XMFLOAT4 color;
 };
 
 struct ConstantBuffer 

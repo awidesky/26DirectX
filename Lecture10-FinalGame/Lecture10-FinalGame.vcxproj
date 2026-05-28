@@ -24,6 +24,7 @@
     <ProjectGuid>{e29816cc-7263-4a4f-acde-77cb5d1ed16e}</ProjectGuid>
     <RootNamespace>Lecture10FinalGame</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Lecture10-AABB</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -128,11 +129,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PhysicsAndColliderBinding.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="digital-numbers.png" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Collider.hpp" />
     <ClInclude Include="Framework.hpp" />
     <ClInclude Include="GameLoop.hpp" />
     <ClInclude Include="GraphicsContext.hpp" />
@@ -140,7 +143,8 @@
     <ClInclude Include="Mesh.hpp" />
     <ClInclude Include="MeshRenderer.hpp" />
     <ClInclude Include="ObjectBase.hpp" />
-    <ClInclude Include="PlayerControl.hpp" />
+    <ClInclude Include="Physics.hpp" />
+    <ClInclude Include="PlayerController.hpp" />
     <ClInclude Include="Timer.hpp" />
     <ClInclude Include="WindowContext.hpp" />
   </ItemGroup>

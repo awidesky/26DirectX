@@ -3,31 +3,38 @@
 #include "GraphicsContext.hpp"
 #include "Timer.hpp"
 #include "ObjectBase.hpp"
+#include "Collider.hpp"
+#include "Physics.hpp" // 물리 헤더 추가
 
 class GameLoop {
 public:
     WindowContext win;
     GraphicsContext gfx;
     DeltaTime timer;
+
     std::vector<GameObject*> world;
     bool isRunning = true;
 
-    GameLoop() {
+    GameLoop() 
+    {
         printf("[Engine] GameLoop Created.\n");
     }
 
-    ~GameLoop() {
+    ~GameLoop() 
+    {
         for (auto obj : world) delete obj;
         world.clear();
         printf("[Engine] GameLoop Destroyed.\n");
     }
 
-    void Initialize(HINSTANCE hInst, LRESULT(CALLBACK* wndProc)(HWND, UINT, WPARAM, LPARAM)) {
+    void Initialize(HINSTANCE hInst, LRESULT(CALLBACK* wndProc)(HWND, UINT, WPARAM, LPARAM)) 
+    {
         win.Initialize(hInst, 800, 600, wndProc);
         gfx.InitDX(win.hWnd, 800, 600);
     }
 
-    void Input() {
+    void Input() 
+    {
         if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) isRunning = false;
 
         // 창 크기 조절 토글 예시 (C키)
@@ -42,12 +49,17 @@ public:
         for (auto obj : world) obj->Input();
     }
 
-    void Update() {
+    void Update() 
+    {
         float dt = timer.GetDelta();
         for (auto obj : world) obj->Update(dt, &gfx);
+
+        // ★ 물리 연산 단계 추가 (업데이트 직후 충돌 판단)
+        Physics::GetInstance().UpdatePhysics();
     }
 
-    void Render() {
+    void Render() 
+    {
         float col[] = { 0.1f, 0.2f, 0.3f, 1.0f };
         gfx.ImmediateContext->ClearRenderTargetView(gfx.RTV, col);
 
@@ -81,7 +93,8 @@ public:
 
         ID3D11BlendState* pBlendState = nullptr;
         HRESULT hr = gfx.Device->CreateBlendState(&blendDesc, &pBlendState);
-        if (FAILED(hr)) {
+        if (FAILED(hr)) 
+        {
             // 에러 처리
         }
 
@@ -98,13 +111,17 @@ public:
         gfx.SwapChain->Present(gfx.VSync, 0);
     }
 
-    void Run() {
+    void Run() 
+    {
         MSG msg = {};
-        while (msg.message != WM_QUIT && isRunning) {
-            if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+        while (msg.message != WM_QUIT && isRunning) 
+        {
+            if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) 
+            {
                 TranslateMessage(&msg); DispatchMessage(&msg);
             }
-            else {
+            else 
+            {
                 Input();
                 Update();
                 Render();
